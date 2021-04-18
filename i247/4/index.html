@@ -1,0 +1,226 @@
+<html>
+<head>
+	<title>Language Families on Wikipedia</title>
+	<script type="text/javascript" src="d3/d3.v2.js"></script>
+	<style type="text/css">
+
+	</style>
+</head>
+<body> 
+	<h1>Language Families on Wikipedia [<a href="http://meta.wikimedia.org/wiki/List_of_Wikipedias/sortable">Data</a>]</h1>
+	<button onclick='sortByNumLanguages()'>Languages</button>
+	<button onclick='sortByArticles()'>Articles</button>
+	<button onclick='sortByEdits()'>Edits</button>
+	<button onclick='sortByAdmins()'>Admins</button>
+	<button onclick='sortByUsers()'>Users</button>
+	<button onclick='sortByImages()'>Images</button>
+	<button onclick='sortByEditsArticle()'>Edits Per Article</button>
+	<button onclick='sortByArticlesAdmin()'>Articles Per Admin</button>
+	<button onclick='sortByArticlesUser()'>Articles Per User</button>
+	<button onclick='sortByImagesArticle()'>Images Per Article</button>
+	<button onclick='sortByUsersAdmin()'>Users Per Admin</button>
+	<button id='BackB' onclick='Back(this)' style='visibility:hidden;'>Back</button>
+	
+<script type="text/javascript">
+	
+	// width and height
+	var w = 1412;
+	var h = 290;
+	var xstart = 0;
+	var circlePadding = 2;
+
+	var dataset = [{"FamilyName":"Germanic","ApparentR":116.793524,"SqrtR":64.33523364,"NumLanguages":27,"Articles":6134022,"Edits":541226294,"Admins":2521,"Users":14948297,"Images":1068853,"EditsArticle":88.23351041,"ArticlesAdmin":2433.170171,"ArticlesUser":0.410349219,"ImagesArticle":0.174249946,"UsersAdmin":5929.510908},
+	{"FamilyName":"Italic","ApparentR":87.0167167,"SqrtR":49.73285175,"NumLanguages":29,"Articles":3665509,"Edits":178290351,"Admins":629,"Users":4091797,"Images":184221,"EditsArticle":48.63999816,"ArticlesAdmin":5827.518283,"ArticlesUser":0.895818879,"ImagesArticle":0.050257959,"UsersAdmin":6505.241653},
+	{"FamilyName":"Slavic","ApparentR":67.41298246,"SqrtR":39.78054215,"NumLanguages":19,"Articles":2345249,"Edits":82105714,"Admins":481,"Users":1530679,"Images":185163,"EditsArticle":35.00938024,"ArticlesAdmin":4875.777547,"ArticlesUser":1.532162524,"ImagesArticle":0.078952384,"UsersAdmin":3182.284823},
+	{"FamilyName":"Japonic","ApparentR":33.59643601,"SqrtR":21.63246581,"NumLanguages":1,"Articles":693521,"Edits":33882511,"Admins":65,"Users":440996,"Images":75367,"EditsArticle":48.85578231,"ArticlesAdmin":10669.55385,"ArticlesUser":1.572624241,"ImagesArticle":0.108672989,"UsersAdmin":6784.553846},
+	{"FamilyName":"Sinitic","ApparentR":22.81557224,"SqrtR":15.42041339,"NumLanguages":8,"Articles":352403,"Edits":15257397,"Admins":105,"Users":952365,"Images":29517,"EditsArticle":43.29530963,"ArticlesAdmin":3356.219048,"ArticlesUser":0.370029348,"ImagesArticle":0.083759219,"UsersAdmin":9070.142857},
+	{"FamilyName":"Finno-Permic","ApparentR":22.09929003,"SqrtR":14.9960969,"NumLanguages":8,"Articles":333276,"Edits":11511716,"Admins":94,"Users":199116,"Images":29052,"EditsArticle":34.54108907,"ArticlesAdmin":3545.489362,"ArticlesUser":1.673778099,"ImagesArticle":0.087170993,"UsersAdmin":2118.255319},
+	{"FamilyName":"Constructed","ApparentR":20.06686341,"SqrtR":13.78249233,"NumLanguages":7,"Articles":281516,"Edits":6129445,"Admins":50,"Users":70414,"Images":12286,"EditsArticle":21.77298981,"ArticlesAdmin":5630.32,"ArticlesUser":3.998011759,"ImagesArticle":0.04364228,"UsersAdmin":1408.28},
+	{"FamilyName":"Afro-Asiatic","ApparentR":18.999288,"SqrtR":13.1389177,"NumLanguages":12,"Articles":255839,"Edits":16960325,"Admins":96,"Users":453300,"Images":40141,"EditsArticle":66.29296159,"ArticlesAdmin":2664.989583,"ArticlesUser":0.564392235,"ImagesArticle":0.156899456,"UsersAdmin":4721.875},
+	{"FamilyName":"Sunda-Sulawesi","ApparentR":18.54681541,"SqrtR":12.8647947,"NumLanguages":7,"Articles":245275,"Edits":6052123,"Admins":44,"Users":274820,"Images":39641,"EditsArticle":24.6748466,"ArticlesAdmin":5574.431818,"ArticlesUser":0.892493268,"ImagesArticle":0.161618591,"UsersAdmin":6245.909091},
+	{"FamilyName":"Turkic","ApparentR":18.0502545,"SqrtR":12.56299496,"NumLanguages":13,"Articles":233902,"Edits":10770359,"Admins":62,"Users":360170,"Images":44489,"EditsArticle":46.04645963,"ArticlesAdmin":3772.612903,"ArticlesUser":0.649421107,"ImagesArticle":0.19020359,"UsersAdmin":5809.193548},
+	{"FamilyName":"Indo-Aryan","ApparentR":16.06580946,"SqrtR":11.34614504,"NumLanguages":19,"Articles":190785,"Edits":3526218,"Admins":88,"Users":118716,"Images":18178,"EditsArticle":18.48267946,"ArticlesAdmin":2168.011364,"ArticlesUser":1.607070656,"ImagesArticle":0.095280027,"UsersAdmin":1349.045455},
+	{"FamilyName":"Borneo-Philippines","ApparentR":15.55763761,"SqrtR":11.03158469,"NumLanguages":7,"Articles":180353,"Edits":2109021,"Admins":30,"Users":45363,"Images":3993,"EditsArticle":11.69385039,"ArticlesAdmin":6011.766667,"ArticlesUser":3.975773207,"ImagesArticle":0.022139915,"UsersAdmin":1512.1},
+	{"FamilyName":"Ugric","ApparentR":15.03185093,"SqrtR":10.70476233,"NumLanguages":1,"Articles":169825,"Edits":8333225,"Admins":36,"Users":145157,"Images":35647,"EditsArticle":49.06948329,"ArticlesAdmin":4717.361111,"ArticlesUser":1.169940134,"ImagesArticle":0.209904313,"UsersAdmin":4032.138889},
+	{"FamilyName":"Baltic","ApparentR":14.2516195,"SqrtR":10.21711762,"NumLanguages":3,"Articles":154705,"Edits":4108569,"Admins":49,"Users":63248,"Images":23036,"EditsArticle":26.55744158,"ArticlesAdmin":3157.244898,"ArticlesUser":2.446006198,"ImagesArticle":0.14890275,"UsersAdmin":1290.77551},
+	{"FamilyName":"Korean","ApparentR":13.58297975,"SqrtR":9.796554291,"NumLanguages":1,"Articles":142231,"Edits":5874624,"Admins":24,"Users":122382,"Images":7998,"EditsArticle":41.30340081,"ArticlesAdmin":5926.291667,"ArticlesUser":1.162188884,"ImagesArticle":0.056232467,"UsersAdmin":5099.25},
+	{"FamilyName":"Iranian","ApparentR":13.49416655,"SqrtR":9.74049961,"NumLanguages":8,"Articles":140608,"Edits":6035155,"Admins":42,"Users":206889,"Images":20608,"EditsArticle":42.92184655,"ArticlesAdmin":3347.809524,"ArticlesUser":0.67963014,"ImagesArticle":0.146563496,"UsersAdmin":4925.928571},
+	{"FamilyName":"Mon-Khmer","ApparentR":12.80657436,"SqrtR":9.304932772,"NumLanguages":2,"Articles":128314,"Edits":3265995,"Admins":30,"Users":191645,"Images":13439,"EditsArticle":25.45314619,"ArticlesAdmin":4277.133333,"ArticlesUser":0.669540035,"ImagesArticle":0.104735259,"UsersAdmin":6388.166667},
+	{"FamilyName":"Dravidian","ApparentR":10.53100034,"SqrtR":7.841381894,"NumLanguages":4,"Articles":91124,"Edits":2126148,"Admins":53,"Users":61106,"Images":18047,"EditsArticle":23.33247004,"ArticlesAdmin":1719.320755,"ArticlesUser":1.491244722,"ImagesArticle":0.198048813,"UsersAdmin":1152.943396},
+	{"FamilyName":"Celtic","ApparentR":10.27600792,"SqrtR":7.675043619,"NumLanguages":6,"Articles":87299,"Edits":2474065,"Admins":47,"Users":43273,"Images":11141,"EditsArticle":28.3401299,"ArticlesAdmin":1857.425532,"ArticlesUser":2.017401151,"ImagesArticle":0.127618873,"UsersAdmin":920.7021277},
+	{"FamilyName":"Tibeto-Burman","ApparentR":9.414717262,"SqrtR":7.109283351,"NumLanguages":4,"Articles":74903,"Edits":617760,"Admins":8,"Users":16723,"Images":2644,"EditsArticle":8.247466724,"ArticlesAdmin":9362.875,"ArticlesUser":4.479040842,"ImagesArticle":0.035298987,"UsersAdmin":2090.375},
+	{"FamilyName":"Tai-Kadai","ApparentR":8.497228899,"SqrtR":6.49940785,"NumLanguages":3,"Articles":62603,"Edits":2835012,"Admins":20,"Users":97449,"Images":24269,"EditsArticle":45.28556139,"ArticlesAdmin":3130.15,"ArticlesUser":0.642418085,"ImagesArticle":0.387665128,"UsersAdmin":4872.45},
+	{"FamilyName":"Pidgin and Creole","ApparentR":8.135239231,"SqrtR":6.256553132,"NumLanguages":8,"Articles":58012,"Edits":522465,"Admins":9,"Users":19136,"Images":196,"EditsArticle":9.006153899,"ArticlesAdmin":6445.777778,"ArticlesUser":3.031563545,"ImagesArticle":0.003378611,"UsersAdmin":2126.222222},
+	{"FamilyName":"Basque","ApparentR":8.124813735,"SqrtR":6.249538996,"NumLanguages":1,"Articles":57882,"Edits":1645533,"Admins":11,"Users":19534,"Images":1,"EditsArticle":28.42909713,"ArticlesAdmin":5262,"ArticlesUser":2.96314119,"ImagesArticle":1.72765E-05,"UsersAdmin":1775.818182},
+	{"FamilyName":"Greek","ApparentR":7.862390566,"SqrtR":6.072608378,"NumLanguages":2,"Articles":54651,"Edits":2243018,"Admins":23,"Users":68059,"Images":5083,"EditsArticle":41.04257928,"ArticlesAdmin":2376.130435,"ArticlesUser":0.802994461,"ImagesArticle":0.093008362,"UsersAdmin":2959.086957},
+	{"FamilyName":"Kartvelian","ApparentR":6.79461734,"SqrtR":5.344732819,"NumLanguages":1,"Articles":42335,"Edits":1233685,"Admins":7,"Users":24925,"Images":7695,"EditsArticle":29.14101807,"ArticlesAdmin":6047.857143,"ArticlesUser":1.698495486,"ImagesArticle":0.181764497,"UsersAdmin":3560.714286},
+	{"FamilyName":"Niger-Congo","ApparentR":6.011290791,"SqrtR":4.801670474,"NumLanguages":26,"Articles":34169,"Edits":943547,"Admins":42,"Users":50451,"Images":2259,"EditsArticle":27.61412391,"ArticlesAdmin":813.547619,"ArticlesUser":0.677271015,"ImagesArticle":0.066112558,"UsersAdmin":1201.214286},
+	{"FamilyName":"Albanian","ApparentR":5.277463561,"SqrtR":4.284819267,"NumLanguages":1,"Articles":27209,"Edits":820401,"Admins":13,"Users":21315,"Images":6049,"EditsArticle":30.15182476,"ArticlesAdmin":2093,"ArticlesUser":1.276518883,"ImagesArticle":0.222316145,"UsersAdmin":1639.615385},
+	{"FamilyName":"Central-Eastern Malayo-Polynesian","ApparentR":4.373915775,"SqrtR":3.63574517,"NumLanguages":10,"Articles":19590,"Edits":339791,"Admins":25,"Users":19625,"Images":1129,"EditsArticle":17.34512506,"ArticlesAdmin":783.6,"ArticlesUser":0.998216561,"ImagesArticle":0.057631445,"UsersAdmin":785},
+	{"FamilyName":"Quechuan","ApparentR":3.809962773,"SqrtR":3.222205204,"NumLanguages":1,"Articles":15387,"Edits":313920,"Admins":2,"Users":5269,"Images":88,"EditsArticle":20.40163775,"ArticlesAdmin":7693.5,"ArticlesUser":2.92028848,"ImagesArticle":0.005719114,"UsersAdmin":2634.5},
+	{"FamilyName":"Armenian","ApparentR":2.964999784,"SqrtR":2.587603403,"NumLanguages":1,"Articles":9923,"Edits":339373,"Admins":6,"Users":7658,"Images":1979,"EditsArticle":34.20064497,"ArticlesAdmin":1653.833333,"ArticlesUser":1.29576913,"ImagesArticle":0.199435655,"UsersAdmin":1276.333333},
+	{"FamilyName":"Mongolian","ApparentR":2.340376706,"SqrtR":2.103914746,"NumLanguages":3,"Articles":6560,"Edits":159783,"Admins":10,"Users":12755,"Images":288,"EditsArticle":24.35716463,"ArticlesAdmin":656,"ArticlesUser":0.514308114,"ImagesArticle":0.043902439,"UsersAdmin":1275.5},
+	{"FamilyName":"Uto-Aztecan","ApparentR":2.280665845,"SqrtR":2.056884892,"NumLanguages":1,"Articles":6270,"Edits":215125,"Admins":6,"Users":4445,"Images":206,"EditsArticle":34.31020734,"ArticlesAdmin":1045,"ArticlesUser":1.410573678,"ImagesArticle":0.032854864,"UsersAdmin":740.8333333},
+	{"FamilyName":"Northwest Caucasian","ApparentR":1.062198279,"SqrtR":1.054200014,"NumLanguages":4,"Articles":1647,"Edits":68303,"Admins":8,"Users":8491,"Images":196,"EditsArticle":41.47115968,"ArticlesAdmin":205.875,"ArticlesUser":0.193970086,"ImagesArticle":0.11900425,"UsersAdmin":1061.375},
+	{"FamilyName":"Athabaskan","ApparentR":0.932726922,"SqrtR":0.940899278,"NumLanguages":1,"Articles":1312,"Edits":53718,"Admins":3,"Users":2527,"Images":244,"EditsArticle":40.94359756,"ArticlesAdmin":437.3333333,"ArticlesUser":0.519192719,"ImagesArticle":0.18597561,"UsersAdmin":842.3333333},
+	{"FamilyName":"Tupi","ApparentR":0.928248882,"SqrtR":0.936946657,"NumLanguages":1,"Articles":1301,"Edits":42044,"Admins":2,"Users":2722,"Images":6,"EditsArticle":32.31667948,"ArticlesAdmin":650.5,"ArticlesUser":0.477957384,"ImagesArticle":0.004611837,"UsersAdmin":1361},
+	{"FamilyName":"Eskimo-Aleut","ApparentR":0.907271556,"SqrtR":0.918398624,"NumLanguages":3,"Articles":1250,"Edits":47856,"Admins":5,"Users":6943,"Images":46,"EditsArticle":38.2848,"ArticlesAdmin":250,"ArticlesUser":0.180037448,"ImagesArticle":0.0368,"UsersAdmin":1388.6},
+	{"FamilyName":"Aymaran","ApparentR":0.712983583,"SqrtR":0.743846192,"NumLanguages":1,"Articles":820,"Edits":31376,"Admins":2,"Users":2895,"Images":9,"EditsArticle":38.26341463,"ArticlesAdmin":410,"ArticlesUser":0.283246978,"ImagesArticle":0.01097561,"UsersAdmin":1447.5},
+	{"FamilyName":"Iroquoian","ApparentR":0.335228851,"SqrtR":0.384413185,"NumLanguages":1,"Articles":219,"Edits":14264,"Admins":2,"Users":2917,"Images":45,"EditsArticle":65.13242009,"ArticlesAdmin":109.5,"ArticlesUser":0.075077134,"ImagesArticle":0.205479452,"UsersAdmin":1458.5},
+	{"FamilyName":"Algonquian","ApparentR":0.296814458,"SqrtR":0.34559134,"NumLanguages":2,"Articles":177,"Edits":19145,"Admins":1,"Users":3980,"Images":10,"EditsArticle":108.1638418,"ArticlesAdmin":177,"ArticlesUser":0.044472362,"ImagesArticle":0.056497175,"UsersAdmin":3980}];
+
+		var svg = d3.select("body")
+			.append("svg")
+			.attr("width", w) 
+			.attr("height", h);
+			
+		var label = d3.select("body")
+			.append("p")
+			.text(" ");
+
+		var currentSort = 'Articles';
+
+		svg.selectAll("circle")
+			.data(dataset)
+			.enter()
+			.append("circle")
+			.attr("cy", function(d) {return h - d.ApparentR; })
+			.attr("cx", function(d, i) {
+				xstart += d.ApparentR + circlePadding;
+				var rtn = xstart;
+				xstart += d.ApparentR + circlePadding;
+				return rtn + "px";})
+			.attr("r", 0)
+			.attr("opacity", 0)
+			.on("mouseover", function(d, i) { d3.select(this).attr("fill", "blue"); label.text(d.FamilyName + " - " + dataLabel(d)); })
+			.on("mouseout", function(d, i) { d3.select(this).attr("fill", "black"); label.text(" "); })
+			.on("click", function(d) { circleClick(d.FamilyName); });
+			
+		svg.selectAll("circle")
+			.transition()
+			.duration(500)
+			.delay(function(d, i) { return i * 5; })
+			.attr("r", function(d) {return d.ApparentR + "px";})
+			.attr("opacity", .5);
+
+		var sort_by = function(field) {
+			return function(a,b) {
+				return ((a[field] < b[field]) ? +1 : (a[field] > b[field]) ? -1 : 0);
+			};
+		}
+		
+		function sortByNumLanguages() { sortMe('NumLanguages'); }
+		function sortByArticles() { sortMe('Articles'); }
+		function sortByEdits() { sortMe('Edits'); }
+		function sortByAdmins() { sortMe('Admins'); }
+		function sortByUsers() { sortMe('Users'); }
+		function sortByImages() { sortMe('Images'); }
+		function sortByEditsArticle() { sortMe('EditsArticle'); }
+		function sortByArticlesAdmin() { sortMe('ArticlesAdmin'); }
+		function sortByArticlesUser() { sortMe('ArticlesUser'); }
+		function sortByImagesArticle() { sortMe('ImagesArticle'); }
+		function sortByUsersAdmin() { sortMe('UsersAdmin'); }
+		
+		function sortMe(field) {
+			currentSort = field;
+			svg.selectAll("circle").sort(sort_by(field));
+			xstart = 0;			
+			svg.selectAll("circle")
+				// .filter(function (d) { if (this.style.visibility="visible") return 1; else return 0; })
+				.transition()
+				.duration(2000)
+				.attr("cx", function(d, i) {
+					xstart += d.ApparentR + circlePadding;
+					var rtn = xstart;
+					xstart += d.ApparentR + circlePadding;
+					return rtn + "px";});
+		}
+		
+		function dataLabel(d) {
+			switch(currentSort) {
+				case 'NumLanguages':
+					return d.NumLanguages + " languages";
+					break;
+				case 'Articles':
+					return addCommas(d.Articles) + " articles";
+					break;
+				case 'Edits':
+					return addCommas(d.Edits) + " edits";
+					break;
+				case 'Admins':
+					return addCommas(d.Admins) + " admins";
+					break;
+				case 'Users':
+					return addCommas(d.Users) + " users";
+					break;
+				case 'Images':
+					return addCommas(d.Images) + " images";
+					break;
+				case 'EditsArticle':
+					return addCommas(roundNumber(d.EditsArticle, 2)) + " edits per article";
+					break;
+				case 'ArticlesAdmin':
+					return addCommas(roundNumber(d.ArticlesAdmin, 2)) + " articles per admin";
+					break;				
+				case 'ArticlesUser':
+					return addCommas(roundNumber(d.ArticlesUser, 2)) + " articles per user";
+					break;
+				case 'ImagesArticle':
+					return addCommas(roundNumber(d.ImagesArticle, 2)) + " images per article";
+					break;
+				case 'UsersAdmin':
+					return addCommas(roundNumber(d.UsersAdmin, 2)) + " users per admin";
+					break;
+				
+				default:
+					return ".";
+					break;
+			}
+		}
+		
+		function roundNumber(number, digits) { // from: http://stackoverflow.com/questions/246193/how-do-i-round-a-number-in-javascript
+		            var multiple = Math.pow(10, digits);
+		            var rndedNum = Math.round(number * multiple) / multiple;
+		            return rndedNum;
+		 }
+		
+		function addCommas(str) { // MODIFIED from: http://stackoverflow.com/questions/1068284/format-numbers-in-javascript
+		    var amount = new String(str);
+		    amount = amount.split("").reverse();
+
+		    var output = "";
+		    for ( var i = 0; i <= amount.length-1; i++ ){
+		        output = amount[i] + output;
+		        if ((i+1) % 3 == 0 && (amount.length-1) !== i && amount[i] != '.')output = ',' + output; // check for decimal
+		    }
+		    return output;
+		}
+		
+		function circleClick(famName) {
+		// 	d3.select("body").select("#BackB").attr("style", "visibility:visible");
+		// 	
+		// 	svg.selectAll("circle")
+		// 		.filter(function (d) { if (d.NumLanguages > 0) return 1; else return 0; })
+		// 		.transition()
+		// 		.duration(500)
+		// 		.delay(function(d, i) { return i * 5; })
+		// 		.attr("visibility", "hidden");
+		// 		
+		// 	// code to insert circles for languages in language family
+		}
+		// 
+		// function Back(backButton) {
+		// 	backButton.style.visibility="hidden";
+		// 	svg.selectAll("circle")
+		// 		.filter(function (d) { if (d.NumLanguages > 0) return 1; else return 0; })
+		// 		.transition()
+		// 		.duration(500)
+		// 		.delay(function(d, i) { return i * 5; })
+		// 		.attr("visibility", "visible");
+		// }
+		
+</script>
+
+
+</body>
+</html>
